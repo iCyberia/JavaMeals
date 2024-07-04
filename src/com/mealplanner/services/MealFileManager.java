@@ -1,8 +1,7 @@
 package com.mealplanner.services;
 
-import com.mealplanner.models.Meal;
 import com.mealplanner.models.Ingredient;
-
+import com.mealplanner.models.Meal;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,3 +46,4 @@ public class MealFileManager {
         return meals;
     }
 }
+
