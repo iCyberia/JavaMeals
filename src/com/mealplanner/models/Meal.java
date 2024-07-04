@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Meal {
-    private String name;
-    private List<Ingredient> ingredients;
+    private final String name;
+    private final List<Ingredient> ingredients;
 
     public Meal(String name) {
         this.name = name;

@@ -1,9 +1,9 @@
 package com.mealplanner.models;
 
 public class Ingredient {
-    private String name;
-    private double quantity;
-    private String unit;
+    private final String name;
+    private final double quantity;
+    private final String unit;
 
     public Ingredient(String name, double quantity, String unit) {
         this.name = name;

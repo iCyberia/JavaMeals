@@ -1,17 +1,22 @@
 package com.mealplanner;
 
-import com.mealplanner.models.*;
-import com.mealplanner.services.*;
+import com.mealplanner.models.Ingredient;
+import com.mealplanner.models.Meal;
+import com.mealplanner.services.GroceryListGenerator;
+import com.mealplanner.services.MealFileManager;
+import com.mealplanner.services.MealPlanner;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class Main {
-    private static Scanner scanner = new Scanner(System.in);
-    private static MealPlanner mealPlanner = new MealPlanner();
-    private static GroceryListGenerator groceryListGenerator = new GroceryListGenerator();
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final MealPlanner mealPlanner = new MealPlanner();
+    private static final GroceryListGenerator groceryListGenerator = new GroceryListGenerator();
+    private static final List<Meal> selectedMealsForWeek = new ArrayList<>();
 
     public static void main(String[] args) {
+        mealPlanner.setMeals(MealFileManager.loadMeals());
         while (true) {
             System.out.println("\nMeal Planner Menu");
             System.out.println("1. Add Meal");
@@ -41,6 +46,7 @@ public class Main {
                     generateGroceryList();
                     break;
                 case 6:
+                    MealFileManager.saveMeals(mealPlanner.getMeals());
                     System.exit(0);
                     break;
                 default:
@@ -100,13 +106,41 @@ public class Main {
     }
 
     private static void selectMealsForWeek() {
-        // Placeholder for selecting meals for the week (e.g., by index)
-        // For simplicity, assume all meals are selected for now
+        selectedMealsForWeek.clear();
+        while (true) {
+            System.out.println("Meals:");
+            List<Meal> meals = mealPlanner.getMeals();
+            for (int i = 0; i < meals.size(); i++) {
+                System.out.println((i + 1) + ". " + meals.get(i).getName());
+            }
+            System.out.print("Select a meal to add to the weekly plan (by number, or type 'done' to finish): ");
+            String input = scanner.nextLine();
+
+            if (input.equalsIgnoreCase("done")) {
+                break;
+            }
+
+            try {
+                int mealIndex = Integer.parseInt(input) - 1;
+                if (mealIndex >= 0 && mealIndex < meals.size()) {
+                    selectedMealsForWeek.add(meals.get(mealIndex));
+                    System.out.println("Added: " + meals.get(mealIndex).getName());
+                } else {
+                    System.out.println("Invalid meal selection.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number or 'done'.");
+            }
+        }
     }
 
     private static void generateGroceryList() {
-        List<Meal> selectedMeals = mealPlanner.getMeals();  // Placeholder for selected meals
-        List<Ingredient> groceryList = groceryListGenerator.generateGroceryList(selectedMeals);
+        if (selectedMealsForWeek.isEmpty()) {
+            System.out.println("No meals selected for the week.");
+            return;
+        }
+
+        List<Ingredient> groceryList = groceryListGenerator.generateGroceryList(selectedMealsForWeek);
         if (groceryList.isEmpty()) {
             System.out.println("No meals selected.");
         } else {
